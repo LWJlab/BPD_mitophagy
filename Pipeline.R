@@ -1,3 +1,15 @@
+library(Seurat)
+library(scCustomize)
+library(viridis)
+library(ggpubr)
+library(dplyr)
+library(RColorBrewer)
+library(AUCell)
+library(clustree)
+library(nichenetr)
+
+
+### GSE275938 ###
 GSE275938_count <- read.csv(file = 'GSE275938_compiled_counts.csv', row.names = 1)
 GSE275938_count <- t(GSE275938_count)
 GSE275938_metadata <- read.csv(file = 'GSE275938_cell_metadata.csv', row.names = 1)
@@ -23,11 +35,6 @@ GSE275938_sce.combined <- FindNeighbors(GSE275938_sce.combined, dims = 1:50)
 GSE275938_sce.combined <- FindClusters(GSE275938_sce.combined, resolution = 2)
 GSE275938_sce.combined <- RunUMAP(GSE275938_sce.combined, dims = 1:50)
 
-
-
-library(scCustomize)
-library(viridis)
-library(ggpubr)
 
 # Gene sets
 # Mitophagy
@@ -62,6 +69,53 @@ GSE275938_sce.combined <- AddModuleScore(object = GSE275938_sce.combined,
                                          name = 'inflammasome',
                                          assay = 'SCT',
                                          slot = 'data')
+
+
+### LMEX0000004400 ###
+BPD_snRNA <- schard::h5ad2seurat('BPD-adata_combined.h5ad')
+
+BPD_snRNA_metadata <- read.csv(file = 'BPD_snRNA_metadata.csv', row.names = 1)
+
+BPD_snRNA@meta.data <- BPD_snRNA_metadata
+
+BPD_snRNA <- BPD_snRNA %>%
+  NormalizeData(verbose = TRUE) %>%
+  FindVariableFeatures(selection.method = "vst", nfeatures = 2000, verbose = T)
+
+
+BPD_snRNA_cells_rankings <- AUCell_buildRankings(BPD_snRNA@assays$RNA@counts, 
+                                       plotStats = TRUE,
+                                       nCores = 50)
+
+# Mitophagy
+Mitophagy_AUCell <- AUCell_calcAUC(mitophagy, 
+                                   BPD_snRNA_cells_rankings, 
+                                   nCores = 50)
+
+Mitophagy_aucs <- as.numeric(getAUC(Mitophagy_AUCell)['mitophagy', ])
+BPD_snRNA$Mitophagy_AUC <- Mitophagy_aucs
+
+# cGAS-STING
+cGAS_STING_AUCell <- AUCell_calcAUC(cGAS_STING, 
+                                   BPD_snRNA_cells_rankings, 
+                                   nCores = 50)
+
+cGAS_STING_aucs <- as.numeric(getAUC(cGAS_STING_AUCell)['cGAS_STING', ])
+BPD_snRNA$cGAS_STING_AUC <- cGAS_STING_aucs
+
+
+BPD_snRNA <- AddModuleScore(object = BPD_snRNA, 
+                            features = mitophagy,
+                            name = 'mitophagy',
+                            assay = 'RNA',
+                            slot = 'data')
+BPD_snRNA <- AddModuleScore(object = BPD_snRNA, 
+                            features = cGAS_STING,
+                            name = 'cGAS_STING',
+                            assay = 'RNA',
+                            slot = 'data')
+
+
 
 ### Figure 1 ###
 GSE275938_sce.combined_celltype <- GSE275938_sce.combined@reductions$umap@cell.embeddings %>%
@@ -896,3 +950,303 @@ p19 +
                      label.y = c(0.24),
                      method = 'wilcox.test',
                      label = "p.signif")
+
+
+
+comparisons1 <- list( c("Control", "aeBPD"),
+                      c("aeBPD", "eBPD"),
+                      c("eBPD", "hBPD"),
+                      c("Control", "eBPD"),
+                      c("Control", "hBPD"),
+                      c("aeBPD", "hBPD")
+)
+
+BPD_snRNA$disease <- factor(BPD_snRNA$disease, levels = c('Control','aeBPD','eBPD','hBPD'))
+
+
+# Mitophagy
+pp <- VlnPlot(BPD_snRNA, assay = 'RNA', feature='Mitophagy_AUC', group.by = 'disease', pt.size = 0, raster = FALSE)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('Mitophagy pathway')+
+  ylab('Estimated AUC value')
+
+pp + 
+  scale_fill_manual(values = alpha(c("#68d0ce", "#f4a4c9", "#4955d0", "#FFD92F"), 0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 1),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
+        #panel.border = element_rect(color = 'black', size = 1, fill = NA),
+        panel.grid = element_blank())+
+  ylim(-0.01, max(pp$data[tail('Mitophagy_AUC',1)]+0.28))+
+  stat_compare_means(comparisons = comparisons1,
+                     tip.length = 0,
+                     label.y = c(0.25,0.3,0.35,0.4,0.45,0.5),
+                     method = 'wilcox.test',
+                     label = "p.signif")
+
+
+# cGAS-STING
+pp1 <- VlnPlot(BPD_snRNA, assay = 'RNA', feature = 'cGAS_STING_AUC', group.by = 'disease', pt.size = 0, raster = FALSE)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('cGAS-STING pathway')+
+  ylab('Estimated AUC value')
+
+pp1 + 
+  scale_fill_manual(values = alpha(c("#68d0ce", "#f4a4c9", "#4955d0", "#FFD92F"), 0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 1),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
+        #panel.border = element_rect(color = 'black', size = 1, fill = NA),
+        panel.grid = element_blank())+
+  ylim(-0.01, max(pp1$data[tail('cGAS_STING_AUC',1)]+0.43))+
+  stat_compare_means(comparisons = comparisons1,
+                     tip.length = 0,
+                     label.y = c(0.35,0.4,0.45,0.5,0.6,0.7),
+                     method = 'wilcox.test',
+                     label = "p.signif")
+
+
+
+### GSE211356 ###
+fs = list.files(pattern = 'GSM.')
+samples=str_split(fs,'_',simplify = T)[,1]
+
+lapply(unique(samples), function(x){
+  y=fs[grepl(x, fs)]
+  folder=paste0(str_split(y[1],'_',simplify = T)[,1])
+  dir.create(folder,recursive = T)
+  file.rename(paste0(y[1]),file.path(folder,"barcodes.tsv.gz"))
+  file.rename(paste0(y[2]),file.path(folder,"features.tsv.gz"))
+  file.rename(paste0(y[3]),file.path(folder,"matrix.mtx.gz"))
+})
+fs_name <- c('GSM6467309','GSM6467310','GSM6467311','GSM6467312')
+GSE211356_scelist = lapply(fs_name, function(x){
+  a = Read10X(x)
+  sce <- CreateSeuratObject(a)
+})
+GSE211356_scelist
+
+GSE211356_raw_sce <- merge(x = GSE211356_scelist[[1]],
+                        y = c(GSE211356_scelist[[2]], 
+                              GSE211356_scelist[[3]],
+                              GSE211356_scelist[[4]]),
+                        add.cell.ids = c('GSM6467309','GSM6467310','GSM6467311','GSM6467312'),
+                        merge.data = TRUE)
+
+GSE211356_sce <- RunQC(GSE211356_raw_sce,
+                        org = 'mmu', 
+                        LowerFeatureCutoff = 400, 
+                        UpperFeatureCutoff = "MAD", 
+                        UpperMitoCutoff = 5, 
+                        Hb = F,
+                        #HbCutoff = 0, 
+                        doubletdetection = T, 
+                        decontXCutoff = 0.2,
+                        dir = "~/GSE221356/")
+ 
+group_names <- sapply(strsplit(rownames(GSE211356_sce@meta.data), "_"), function(x) x[1])
+                      
+GSE211356_sce <- AddMetaData(GSE211356_sce, 
+                              group_names,
+                              col.name = 'orig.ident')
+
+GSE211356_sce@meta.data <- GSE211356_sce@meta.data %>%
+  mutate(oxygen = case_when(
+    orig.ident %in% c("GSM6467309") ~ "Hyperoxia",
+    orig.ident %in% c("GSM6467310") ~ "Hyperoxia",
+    orig.ident %in% c("GSM6467311") ~ "Normoxia",
+    orig.ident %in% c("GSM6467312") ~ "Normoxia"
+  ))
+
+GSE211356_sce@meta.data <- GSE211356_sce@meta.data %>%
+  mutate(sex = case_when(
+    orig.ident %in% c("GSM6467309") ~ "Female",
+    orig.ident %in% c("GSM6467310") ~ "Male",
+    orig.ident %in% c("GSM6467311") ~ "Female",
+    orig.ident %in% c("GSM6467312") ~ "Male"
+  ))
+
+
+GSE211356_sce <- processExper(GSE211356_sce, 
+                              org = 'mus',
+                              cyclescoring = T,
+                              sct.method = T,
+                              reduction = 'cca')
+
+GSE211356_sce <- RunPCA(GSE211356_sce) %>%
+  FindNeighbors(dims = 1:50) %>%
+  FindClusters(resolution = c(seq(0.1, 1, .1))) 
+
+clustree(GSE211356_sce)
+
+GSE211356_sce <- FindClusters(GSE211356_sce, resolution = 0.8)
+
+GSE211356_sce <- RunUMAP(GSE211356_sce, dims = 1:50)
+
+cluster_ids <- c("Endothelium", #cluster 0
+                 "Epithelium", #cluster 1
+                 "Epithelium", #cluster 2
+                 "Immune", #cluster 3
+                 "Endothelium", #cluster 4
+                 'Immune', #cluster 5
+                 "Immune", #cluster 6
+                 'Endothelium', #cluster 7
+                 "Immune", #cluster 8
+                 "Immune", #cluster 9
+                 "Immune", #cluster 10
+                 "Endothelium", #cluster 11
+                 "Immune", #cluster 12
+                 "Mesenchyme", #cluster 13
+                 "Immune", #cluster 14
+                 "Endothelium", #cluster 15
+                 'Immune', #cluster 16
+                 'Mesenchyme', #cluster 17
+                 'Endothelium', #cluster 18
+                 'Mesenchyme', #cluster 19
+                 'Mesenchyme', #cluster 20
+                 'Immune', #cluster 21
+                 'Immune', #cluster 22
+                 'Immune', #cluster 23
+                 'Immune', #cluster 24
+                 "Immune", #cluster 25
+                 "Low quality", #cluster 26
+                 "Mesenchyme", #cluster 27
+                 'Endothelium', #cluster 28
+                 'Epithelium', #cluster 29
+                 'Immune', #cluster 30
+                 'Immune', #cluster 31
+                 'Mesenchyme', #cluster 32
+                 'Immune', #cluster 33
+                 'Immune' #cluster 34
+)
+
+names(cluster_ids) <- levels(GSE211356_sce)
+GSE211356_sce <- RenameIdents(GSE211356_sce, cluster_ids)
+GSE211356_sce$Celltype <- Idents(GSE211356_sce)
+
+GSE211356_sce1 <- subset(GSE211356_sce, idents = c('Low quality'), invert = T)
+
+GSE211356_sce1$Celltype <- factor(GSE211356_sce1$Celltype, levels = c('Epithelium',
+                                                                      'Endothelium',
+                                                                      'Immune',
+                                                                      'Mesenchyme'))
+Idents(GSE211356_sce1) <- 'Celltype'
+
+GSE211356_sce1$Group_sex <- paste0(GSE211356_sce1$oxygen,"_",GSE211356_sce1$sex)
+
+
+comparisons1 <- list( c("Normoxia", "Hyperoxia"))
+comparisons2 <- list( c("Female", "Male"))
+
+mitophagy <- c("ATG12", "ATG5", "CSNK2A1", "CSNK2A2", "CSNK2B", "FUNDC1", "MAP1LC3A", "MAP1LC3B", "MFN1", "MFN2", "MTERF3", "PGAM5", "PINK1", "PRKN", "RPS27A", "SQSTM1", "SRC", "TOMM20", "TOMM22", "TOMM40", "TOMM5", "TOMM6", "TOMM7", "TOMM70", "UBA52", "UBB", "UBC", "ULK1", "VDAC1", "BNIP3", "BNIP3L", "OPTN", "NDP52", "ATG7", "BECN1", "LAMP1", "LAMP2", "DNM1L", "OPA1", "PPARGC1A", "TFAM", "NRF1")
+cGAS_STING <- c('CGAS', 'TMEM173', 'TBK1', 'IRF3', 'IKBKG', 'CHUK', 'IKBKB', 'NFKB1', 'RELA', 'TREX1', 'ENPP1', 'NLRP4', 'NLRC3', 'TRIM21', 'TRIM56', 'IFI16', 'DDX41', 'ZDHHC1', 'PRKDC', 'XRCC6', 'STAT6', 'DTX4', 'XRCC5', 'MRE11')
+TLR9 <- c("TLR9", "MYD88", "IRAK4", "IRAK1", "TRAF6", "MAP3K7", "TAB1", "TAB2", "TAB3", "CHUK", "IKBKB", "IKBKG", "NFKBIA", "NFKB1", "RELA", "MAP2K", "MAPK", "FOS", "JUN", "IRF7", "TNF", "IL6", "IL12", "IFNA", "IFNB", "IRF5", "IFNB1", "IFNA1", "IL1B", "CCL5", "CXCL10")
+inflammasome <- c("NLRP3", "PYCARD", "CASP1", "IL1B", "IL18", "GSDMD", "NEK7","NLRP1", "NLRC4", "AIM2", "NLRP6", "NLRP12","CARD8", "IL1RN", "SIRT1", "SIRT2", "TXNIP","P2RX7", "PANX1", "TLR4", "TLR2","IL1A", "IL33", "CASP4", "CASP5", "GSDME","NFKB1", "RELA", "NFKBIA")
+
+mitophagy <- as.vector(nichenetr::convert_human_to_mouse_symbols(symbols = mitophagy))
+mitophagy <- list(mitophagy = mitophagy[complete.cases(mitophagy)])
+
+cGAS_STING <- as.vector(nichenetr::convert_human_to_mouse_symbols(symbols = cGAS_STING))
+cGAS_STING <- list(cGAS_STING = cGAS_STING[complete.cases(cGAS_STING)])
+
+TLR9 <- as.vector(nichenetr::convert_human_to_mouse_symbols(symbols = TLR9))
+TLR9 <- list(TLR9 = TLR9[complete.cases(TLR9)])
+
+inflammasome <- as.vector(nichenetr::convert_human_to_mouse_symbols(symbols = inflammasome))
+inflammasome <- list(inflammasome = inflammasome[complete.cases(inflammasome)])
+
+
+
+GSE211356_sce1 <- AddModuleScore(object = GSE211356_sce1, 
+                                          features = mitophagy,
+                                          name = 'mitophagy',
+                                          assay = 'SCT',
+                                          slot ='data')
+GSE211356_sce1 <- AddModuleScore(object = GSE211356_sce1, 
+                                          features = cGAS_STING,
+                                          name = 'cGAS_STING',
+                                          assay = 'SCT',
+                                          slot ='data')
+GSE211356_sce1 <- AddModuleScore(object = GSE211356_sce1, 
+                                          features = TLR9,
+                                          name = 'TLR9',
+                                          assay = 'SCT',
+                                          slot ='data')
+GSE211356_sce1 <- AddModuleScore(object = GSE211356_sce1, 
+                                          features = inflammasome,
+                                          name = 'inflammasome',
+                                          assay = 'SCT',
+                                          slot ='data')
+
+
+GSE211356_sce1$oxygen <- factor(GSE211356_sce1$oxygen, levels = c('Normoxia',
+                                                                  'Hyperoxia'))
+
+GSE211356_sce1$sex <- factor(GSE211356_sce1$sex, levels = c('Female',
+                                                            'Male'))
+
+
+### Total-oxygen ###
+## 1. Miotphagy ##
+# Global
+p <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature='Mitophagy', group.by = 'oxygen', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('Global')+
+  ylab('Estimated score')
+
+p + 
+  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"),0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size=18,face='bold',colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 0.5),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5,face = 'bold',colour = 'black'),
+        #panel.border = element_rect(color='black',size=1,fill = NA),
+        panel.grid = element_blank())+
+  ylim(-0.18, max(p$data[tail('Mitophagy',1)]+0.06))+
+  stat_compare_means(comparisons = comparisons,
+                     tip.length = 0,
+                     label.y=c(0.38),
+                     method = 'wilcox.test',
+                     label= "p.signif")
+
