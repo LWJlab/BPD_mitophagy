@@ -116,8 +116,9 @@ BPD_snRNA <- AddModuleScore(object = BPD_snRNA,
                             slot = 'data')
 
 
-
+################
 ### Figure 1 ###
+################
 GSE275938_sce.combined_celltype <- GSE275938_sce.combined@reductions$umap@cell.embeddings %>%
   as.data.frame() %>% cbind(Celltype = GSE275938_sce.combined@meta.data$celltype)
 
@@ -225,7 +226,10 @@ FeaturePlot_scCustom(seurat_object = GSE275938_sce.combined,
     panel.border=element_rect(fill = NA, color = "black",
                                   size = 1, linetype = "solid"))
 
+
+################
 ### Figure 2 ###
+################
 comparisons <- list( c("Term infant", "BPD"))
 
 ## 1. Miotphagy ##
@@ -965,12 +969,12 @@ BPD_snRNA$disease <- factor(BPD_snRNA$disease, levels = c('Control','aeBPD','eBP
 
 
 # Mitophagy
-pp <- VlnPlot(BPD_snRNA, assay = 'RNA', feature='Mitophagy_AUC', group.by = 'disease', pt.size = 0, raster = FALSE)+
+p20 <- VlnPlot(BPD_snRNA, assay = 'RNA', feature='Mitophagy_AUC', group.by = 'disease', pt.size = 0, raster = FALSE)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('Mitophagy pathway')+
   ylab('Estimated AUC value')
 
-pp + 
+p20 + 
   scale_fill_manual(values = alpha(c("#68d0ce", "#f4a4c9", "#4955d0", "#FFD92F"), 0.5))+
   theme_classic()+
   theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
@@ -991,7 +995,7 @@ pp +
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         #panel.border = element_rect(color = 'black', size = 1, fill = NA),
         panel.grid = element_blank())+
-  ylim(-0.01, max(pp$data[tail('Mitophagy_AUC',1)]+0.28))+
+  ylim(-0.01, max(p20$data[tail('Mitophagy_AUC',1)]+0.28))+
   stat_compare_means(comparisons = comparisons1,
                      tip.length = 0,
                      label.y = c(0.25,0.3,0.35,0.4,0.45,0.5),
@@ -1000,12 +1004,12 @@ pp +
 
 
 # cGAS-STING
-pp1 <- VlnPlot(BPD_snRNA, assay = 'RNA', feature = 'cGAS_STING_AUC', group.by = 'disease', pt.size = 0, raster = FALSE)+
+p21 <- VlnPlot(BPD_snRNA, assay = 'RNA', feature = 'cGAS_STING_AUC', group.by = 'disease', pt.size = 0, raster = FALSE)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('cGAS-STING pathway')+
   ylab('Estimated AUC value')
 
-pp1 + 
+p21 + 
   scale_fill_manual(values = alpha(c("#68d0ce", "#f4a4c9", "#4955d0", "#FFD92F"), 0.5))+
   theme_classic()+
   theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
@@ -1026,7 +1030,7 @@ pp1 +
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         #panel.border = element_rect(color = 'black', size = 1, fill = NA),
         panel.grid = element_blank())+
-  ylim(-0.01, max(pp1$data[tail('cGAS_STING_AUC',1)]+0.43))+
+  ylim(-0.01, max(p21$data[tail('cGAS_STING_AUC',1)]+0.43))+
   stat_compare_means(comparisons = comparisons1,
                      tip.length = 0,
                      label.y = c(0.35,0.4,0.45,0.5,0.6,0.7),
@@ -1067,7 +1071,6 @@ GSE211356_sce <- RunQC(GSE211356_raw_sce,
                         UpperFeatureCutoff = "MAD", 
                         UpperMitoCutoff = 5, 
                         Hb = F,
-                        #HbCutoff = 0, 
                         doubletdetection = T, 
                         decontXCutoff = 0.2,
                         dir = "~/GSE221356/")
@@ -1163,8 +1166,8 @@ Idents(GSE211356_sce1) <- 'Celltype'
 GSE211356_sce1$Group_sex <- paste0(GSE211356_sce1$oxygen,"_",GSE211356_sce1$sex)
 
 
-comparisons1 <- list( c("Normoxia", "Hyperoxia"))
-comparisons2 <- list( c("Female", "Male"))
+comparisons2 <- list( c("Normoxia", "Hyperoxia"))
+comparisons3 <- list( c("Female", "Male"))
 
 mitophagy <- c("ATG12", "ATG5", "CSNK2A1", "CSNK2A2", "CSNK2B", "FUNDC1", "MAP1LC3A", "MAP1LC3B", "MFN1", "MFN2", "MTERF3", "PGAM5", "PINK1", "PRKN", "RPS27A", "SQSTM1", "SRC", "TOMM20", "TOMM22", "TOMM40", "TOMM5", "TOMM6", "TOMM7", "TOMM70", "UBA52", "UBB", "UBC", "ULK1", "VDAC1", "BNIP3", "BNIP3L", "OPTN", "NDP52", "ATG7", "BECN1", "LAMP1", "LAMP2", "DNM1L", "OPA1", "PPARGC1A", "TFAM", "NRF1")
 cGAS_STING <- c('CGAS', 'TMEM173', 'TBK1', 'IRF3', 'IKBKG', 'CHUK', 'IKBKB', 'NFKB1', 'RELA', 'TREX1', 'ENPP1', 'NLRP4', 'NLRC3', 'TRIM21', 'TRIM56', 'IFI16', 'DDX41', 'ZDHHC1', 'PRKDC', 'XRCC6', 'STAT6', 'DTX4', 'XRCC5', 'MRE11')
@@ -1182,7 +1185,6 @@ TLR9 <- list(TLR9 = TLR9[complete.cases(TLR9)])
 
 inflammasome <- as.vector(nichenetr::convert_human_to_mouse_symbols(symbols = inflammasome))
 inflammasome <- list(inflammasome = inflammasome[complete.cases(inflammasome)])
-
 
 
 GSE211356_sce1 <- AddModuleScore(object = GSE211356_sce1, 
@@ -1213,19 +1215,21 @@ GSE211356_sce1$oxygen <- factor(GSE211356_sce1$oxygen, levels = c('Normoxia',
 GSE211356_sce1$sex <- factor(GSE211356_sce1$sex, levels = c('Female',
                                                             'Male'))
 
-
+################
+### Figure 3 ###
+################                      
 ### Total-oxygen ###
 ## 1. Miotphagy ##
 # Global
-p <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature='Mitophagy', group.by = 'oxygen', pt.size = 0)+
+pp <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'Mitophagy', group.by = 'oxygen', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('Global')+
   ylab('Estimated score')
 
-p + 
-  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"),0.5))+
+pp + 
+  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
   theme_classic()+
-  theme(axis.text.y = element_text(size=18,face='bold',colour = 'black'),
+  theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
         axis.text.x = element_text(colour = 'black', 
                                    face = 'bold',
                                    size = 18, 
@@ -1240,13 +1244,160 @@ p +
                                     vjust = 0.5),
         axis.ticks.x = element_blank(),
         legend.position = 'none',
-        plot.title = element_text(size = 20, hjust = 0.5,face = 'bold',colour = 'black'),
-        #panel.border = element_rect(color='black',size=1,fill = NA),
+        plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
+        #panel.border = element_rect(color = 'black', size = 1, fill = NA),
         panel.grid = element_blank())+
-  ylim(-0.18, max(p$data[tail('Mitophagy',1)]+0.06))+
+  ylim(-0.18, max(pp$data[tail('Mitophagy', 1)]+0.06))+
+  stat_compare_means(comparisons = comparisons2,
+                     tip.length = 0,
+                     label.y = c(0.38),
+                     method = 'wilcox.test',
+                     label = "p.signif")
+
+
+## 2.cGAS-STING ##
+# Global
+pp1 <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'cGAS-STING', group.by = 'oxygen', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('Global')+
+  ylab('Estimated score')
+
+pp1 + 
+  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 0.5),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
+        #panel.border = element_rect(color = 'black', size = 1, fill = NA),
+        panel.grid = element_blank())+
+  ylim(-0.24, max(pp1$data[tail('cGAS-STING', 1)]+0.08))+
+  stat_compare_means(comparisons = comparisons2,
+                     tip.length = 0,
+                     label.y = c(0.45),
+                     method = 'wilcox.test',
+                     label = "p.signif")        
+
+
+## 3.TLR9 ##
+# Global
+pp2 <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'TLR9', group.by = 'oxygen', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('Global')+
+  ylab('Estimated score')
+
+pp2 + 
+  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 0.5),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
+        #panel.border = element_rect(color = 'black', size = 1, fill = NA),
+        panel.grid = element_blank())+
+  ylim(-0.4, max(pp2$data[tail('TLR9', 1)]+0.17))+
+  stat_compare_means(comparisons = comparisons2,
+                     tip.length = 0,
+                     label.y = c(0.87),
+                     method = 'wilcox.test',
+                     label = "p.signif")
+
+
+## 4.Inflammasome ##
+# Global
+pp3 <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'Inflammasome', group.by = 'oxygen', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('Global')+
+  ylab('Estimated score')
+
+pp3 + 
+  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 0.5),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
+        #panel.border = element_rect(color = 'black', size = 1, fill = NA),
+        panel.grid = element_blank())+
+  ylim(-0.4, max(pp3$data[tail('Inflammasome', 1)]+0.16))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
-                     label.y=c(0.38),
+                     label.y = c(0.94),
                      method = 'wilcox.test',
-                     label= "p.signif")
+                     label = "p.signif")
 
+
+
+### Normoxia ###
+GSE211356_sce_normoxia <- subset(GSE211356_sce1, oxygen == 'Normoxia')
+
+## 1. Miotphagy ##
+# Global
+pp4 <- VlnPlot(GSE211356_sce_normoxia, assay = 'SCT', feature = 'Mitophagy', group.by = 'sex', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('Global')+
+  ylab('Estimated score')
+
+pp4 + 
+  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 0.5),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
+        #panel.border = element_rect(color = 'black', size = 1, fill = NA),
+        panel.grid = element_blank())+
+  ylim(-0.18, max(pp4$data[tail('Mitophagy', 1)]+0.06))+
+  stat_compare_means(comparisons = comparisons,
+                     tip.length = 0.02,
+                     label.y = c(0.38),
+                     method = 'wilcox.test',
+                     label = "p.signif")                     
