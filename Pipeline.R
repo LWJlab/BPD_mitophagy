@@ -338,49 +338,14 @@ p2 +
                      label = "p.signif")
 
 
-# Immune
-p3 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
-                       celltype_lineage == 'Immune'), assay = 'SCT', feature = 'Mitophagy', group.by = 'group', pt.size = 0)+
-  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Immune cells')+
-  ylab('Estimated score')
-
-p3 + 
-  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
-  theme_classic()+
-  theme(axis.text.y = element_text(size = 18, face ='bold', colour = 'black'),
-        axis.text.x = element_text(colour = 'black', 
-                                   face = 'bold',
-                                   size = 18, 
-                                   angle = 45, 
-                                   vjust = 1, 
-                                   hjust = 1),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 20,
-                                    colour = 'black',
-                                    face = 'bold',
-                                    angle = 90, 
-                                    vjust = 0.5),
-        axis.ticks.x = element_blank(),
-        legend.position = 'none',
-        plot.title = element_text(size = 20, hjust = 0.5,face = 'bold',colour = 'black'),
-        panel.grid = element_blank())+
-  ylim(-0.26, max(p3$data[tail('Mitophagy', 1)]+0.09))+
-  stat_compare_means(comparisons = comparisons,
-                     tip.length = 0,
-                     label.y = c(0.43),
-                     method = 'wilcox.test',
-                     label = "p.signif")
-
-
 # Mesenchyme
-p4 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
+p3 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
                        celltype_lineage == 'Mesenchymal'), assay = 'SCT', feature = 'Mitophagy', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('Mesenchymal cells')+
   ylab('Estimated score')
 
-p4 + 
+p3 + 
   scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
   theme_classic()+
   theme(axis.text.y = element_text(size = 18, face = 'bold', colour = 'black'),
@@ -400,10 +365,45 @@ p4 +
         legend.position = 'none',
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
-  ylim(-0.23, max(p4$data[tail('Mitophagy', 1)]+0.08))+
+  ylim(-0.23, max(p3$data[tail('Mitophagy', 1)]+0.08))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
                      label.y = c(0.41),
+                     method = 'wilcox.test',
+                     label = "p.signif")
+
+
+# Immune
+p4 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
+                       celltype_lineage == 'Immune'), assay = 'SCT', feature = 'Mitophagy', group.by = 'group', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
+  ggtitle('Immune cells')+
+  ylab('Estimated score')
+
+p4 + 
+  scale_fill_manual(values = alpha(c("#f4a4c9", "#4955d0"), 0.5))+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 18, face ='bold', colour = 'black'),
+        axis.text.x = element_text(colour = 'black', 
+                                   face = 'bold',
+                                   size = 18, 
+                                   angle = 45, 
+                                   vjust = 1, 
+                                   hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 20,
+                                    colour = 'black',
+                                    face = 'bold',
+                                    angle = 90, 
+                                    vjust = 0.5),
+        axis.ticks.x = element_blank(),
+        legend.position = 'none',
+        plot.title = element_text(size = 20, hjust = 0.5,face = 'bold',colour = 'black'),
+        panel.grid = element_blank())+
+  ylim(-0.26, max(p4$data[tail('Mitophagy', 1)]+0.09))+
+  stat_compare_means(comparisons = comparisons,
+                     tip.length = 0,
+                     label.y = c(0.43),
                      method = 'wilcox.test',
                      label = "p.signif")
 
@@ -413,7 +413,6 @@ p4 +
 p5 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD')), 
               assay = 'SCT', feature = 'cGAS-STING', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 p5 + 
@@ -448,7 +447,6 @@ p5 +
 p6 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
                        celltype_lineage == 'Epithelial'), assay = 'SCT', feature = 'cGAS-STING', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Epithelial cells')+
   ylab('Estimated score')
 
 p6 + 
@@ -483,7 +481,6 @@ p6 +
 p7 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
                        celltype_lineage == 'Endothelial'), assay = 'SCT', feature = 'cGAS-STING', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Endothelial cells')+
   ylab('Estimated score')
 
 p7 + 
@@ -514,11 +511,11 @@ p7 +
                      label = "p.signif")
 
 
-# Immune
+# Mesenchyme
 p8 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
-                       celltype_lineage == 'Immune'), assay = 'SCT', feature = 'cGAS-STING', group.by = 'group', pt.size = 0)+
-  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Immune cells')+
+                       celltype_lineage == 'Mesenchymal'), assay = 'SCT', feature = 'cGAS-STING', group.by = 'group', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black",fill = "white")+NoLegend()+
+  ggtitle('Mesenchymal cells')+
   ylab('Estimated score')
 
 p8 + 
@@ -541,19 +538,18 @@ p8 +
         legend.position = 'none',
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
-  ylim(-0.23, max(p8$data[tail('cGAS-STING', 1)]+0.09))+
+  ylim(-0.23, max(p8$data[tail('cGAS-STING', 1)]+0.08))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
-                     label.y = c(0.38),
+                     label.y = c(0.32),
                      method = 'wilcox.test',
                      label = "p.signif")
 
 
-# Mesenchyme
+# Immune
 p9 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
-                       celltype_lineage == 'Mesenchymal'), assay = 'SCT', feature = 'cGAS-STING', group.by = 'group', pt.size = 0)+
-  geom_boxplot(width = .15, col = "black",fill = "white")+NoLegend()+
-  ggtitle('Mesenchymal cells')+
+                       celltype_lineage == 'Immune'), assay = 'SCT', feature = 'cGAS-STING', group.by = 'group', pt.size = 0)+
+  geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ylab('Estimated score')
 
 p9 + 
@@ -576,10 +572,10 @@ p9 +
         legend.position = 'none',
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
-  ylim(-0.23, max(p9$data[tail('cGAS-STING', 1)]+0.08))+
+  ylim(-0.23, max(p9$data[tail('cGAS-STING', 1)]+0.09))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
-                     label.y = c(0.32),
+                     label.y = c(0.38),
                      method = 'wilcox.test',
                      label = "p.signif")
 
@@ -589,7 +585,6 @@ p9 +
 p10 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD')), 
                assay = 'SCT', feature = 'TLR9', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 p10 + 
@@ -624,7 +619,6 @@ p10 +
 p11 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
                         celltype_lineage == 'Epithelial'), assay = 'SCT', feature = 'TLR9', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Epithelial cells')+
   ylab('Estimated score')
 
 p11 + 
@@ -659,7 +653,6 @@ p11 +
 p12 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
                         celltype_lineage == 'Endothelial'), assay = 'SCT', feature = 'TLR9', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Endothelial cells')+
   ylab('Estimated score')
 
 p12 + 
@@ -690,11 +683,10 @@ p12 +
                      label = "p.signif")
 
 
-# Immune
+# Mesenchyme
 p13 <- VlnPlot(subset(GSE275938_sce.combined1, group %in% c('Term infant', 'BPD') &
-                        celltype_lineage == 'Immune'), assay = 'SCT', feature = 'TLR9', group.by = 'group', pt.size = 0)+
+                        celltype_lineage == 'Mesenchymal'), assay = 'SCT', feature = 'TLR9', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Immune cells')+
   ylab('Estimated score')
 
 p13 + 
@@ -717,19 +709,18 @@ p13 +
         legend.position = 'none',
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
-  ylim(-0.23, max(p13$data[tail('TLR9', 1)]+0.1))+
+  ylim(-0.24, max(p13$data[tail('TLR9', 1)]+0.09))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
-                     label.y = c(0.63),
+                     label.y = c(0.54),
                      method = 'wilcox.test',
                      label = "p.signif")
 
 
-# Mesenchyme
+# Immune
 p14 <- VlnPlot(subset(GSE275938_sce.combined1, group %in% c('Term infant', 'BPD') &
-                        celltype_lineage == 'Mesenchymal'), assay = 'SCT', feature = 'TLR9', group.by = 'group', pt.size = 0)+
+                        celltype_lineage == 'Immune'), assay = 'SCT', feature = 'TLR9', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Mesenchymal cells')+
   ylab('Estimated score')
 
 p14 + 
@@ -752,12 +743,13 @@ p14 +
         legend.position = 'none',
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
-  ylim(-0.24, max(p14$data[tail('TLR9', 1)]+0.09))+
+  ylim(-0.23, max(p14$data[tail('TLR9', 1)]+0.1))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
-                     label.y = c(0.54),
+                     label.y = c(0.63),
                      method = 'wilcox.test',
                      label = "p.signif")
+
 
 
 ## 4. Inflammasome ##
@@ -765,7 +757,6 @@ p14 +
 p15 <- VlnPlot(subset(GSE275938_sce.combined1, group %in% c('Term infant', 'BPD')), 
                assay = 'SCT', feature = 'Inflammasome', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 p15 + 
@@ -800,7 +791,6 @@ p15 +
 p16 <- VlnPlot(subset(GSE275938_sce.combined1, group %in% c('Term infant', 'BPD') &
                         celltype_lineage == 'Epithelial'), assay = 'SCT', feature = 'Inflammasome', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black",fill = "white")+NoLegend()+
-  ggtitle('Epithelial cells')+
   ylab('Estimated score')
 
 p16 + 
@@ -835,7 +825,6 @@ p16 +
 p17 <- VlnPlot(subset(GSE275938_sce.combined1, group %in% c('Term infant', 'BPD') &
                         celltype_lineage == 'Endothelial'), assay = 'SCT', feature = 'Inflammasome', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Endothelial cells')+
   ylab('Estimated score')
 
 p17 + 
@@ -866,11 +855,10 @@ p17 +
                      label = "p.signif")
 
 
-# Immune
-p18 <- VlnPlot(subset(GSE275938_sce.combined1, group %in% c('Term infant', 'BPD') &
-                        celltype_lineage == 'Immune'), assay = 'SCT', feature = 'Inflammasome', group.by = 'group', pt.size = 0)+
+# Mesenchyme
+p18 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
+                        celltype_lineage == 'Mesenchymal'), assay = 'SCT', feature = 'Inflammasome', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Immune cells')+
   ylab('Estimated score')
 
 p18 + 
@@ -893,19 +881,18 @@ p18 +
         legend.position = 'none',
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
-  ylim(-0.23, max(p18$data[tail('Inflammasome', 1)]+0.1))+
+  ylim(-0.24, max(p18$data[tail('Inflammasome', 1)]+0.07))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
-                     label.y = c(0.76),
+                     label.y = c(0.24),
                      method = 'wilcox.test',
                      label = "p.signif")
 
 
-# Mesenchyme
-p19 <- VlnPlot(subset(GSE275938_sce.combined, group %in% c('Term infant', 'BPD') &
-                        celltype_lineage == 'Mesenchymal'), assay = 'SCT', feature = 'Inflammasome', group.by = 'group', pt.size = 0)+
+# Immune
+p19 <- VlnPlot(subset(GSE275938_sce.combined1, group %in% c('Term infant', 'BPD') &
+                        celltype_lineage == 'Immune'), assay = 'SCT', feature = 'Inflammasome', group.by = 'group', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Mesenchymal cells')+
   ylab('Estimated score')
 
 p19 + 
@@ -928,13 +915,12 @@ p19 +
         legend.position = 'none',
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
-  ylim(-0.24, max(p$data[tail('Inflammasome', 1)]+0.07))+
+  ylim(-0.23, max(p19$data[tail('Inflammasome', 1)]+0.1))+
   stat_compare_means(comparisons = comparisons,
                      tip.length = 0,
-                     label.y = c(0.24),
+                     label.y = c(0.76),
                      method = 'wilcox.test',
                      label = "p.signif")
-
 
 
 comparisons1 <- list( c("Control", "aeBPD"),
@@ -1034,7 +1020,6 @@ GSE211356_scelist = lapply(fs_name, function(x){
   a = Read10X(x)
   sce <- CreateSeuratObject(a)
 })
-
 
 GSE211356_raw_sce <- merge(x = GSE211356_scelist[[1]],
                            y = c(GSE211356_scelist[[2]], 
@@ -1189,21 +1174,19 @@ GSE211356_sce1 <- AddModuleScore(object = GSE211356_sce1,
                                  slot ='data')
 
 
-GSE211356_sce1$oxygen <- factor(GSE211356_sce1$oxygen, levels = c('Normoxia',
-                                                                  'Hyperoxia'))
+GSE211356_sce1$oxygen <- factor(GSE211356_sce1$oxygen, levels = c('Normoxia', 'Hyperoxia'))
 
-GSE211356_sce1$sex <- factor(GSE211356_sce1$sex, levels = c('Female',
-                                                            'Male'))
+GSE211356_sce1$sex <- factor(GSE211356_sce1$sex, levels = c('Female', 'Male'))
 
+                      
 ################
 ### Figure 3 ###
 ################                      
-### Total-oxygen ###
+### Oxygen ###
 ## 1. Miotphagy ##
-# Global
 pp <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'Mitophagy', group.by = 'oxygen', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
+  ggtitle('Mitophagy')+
   ylab('Estimated score')
 
 pp + 
@@ -1235,10 +1218,9 @@ pp +
 
 
 ## 2.cGAS-STING ##
-# Global
 pp1 <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'cGAS-STING', group.by = 'oxygen', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
+  ggtitle('cGAS-STING')+
   ylab('Estimated score')
 
 pp1 + 
@@ -1270,10 +1252,9 @@ pp1 +
 
 
 ## 3.TLR9 ##
-# Global
 pp2 <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'TLR9', group.by = 'oxygen', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
+  ggtitle('TLR9')+
   ylab('Estimated score')
 
 pp2 + 
@@ -1305,10 +1286,9 @@ pp2 +
 
 
 ## 4.Inflammasome ##
-# Global
 pp3 <- VlnPlot(GSE211356_sce1, assay = 'SCT', feature = 'Inflammasome', group.by = 'oxygen', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
+  ggtitle('Inflammasome')+
   ylab('Estimated score')
 
 pp3 + 
@@ -1332,7 +1312,7 @@ pp3 +
         plot.title = element_text(size = 20, hjust = 0.5, face = 'bold', colour = 'black'),
         panel.grid = element_blank())+
   ylim(-0.4, max(pp3$data[tail('Inflammasome', 1)]+0.16))+
-  stat_compare_means(comparisons = comparisons,
+  stat_compare_means(comparisons = comparisons2,
                      tip.length = 0,
                      label.y = c(0.94),
                      method = 'wilcox.test',
@@ -1344,10 +1324,8 @@ pp3 +
 GSE211356_sce_normoxia <- subset(GSE211356_sce1, oxygen == 'Normoxia')
 
 ## 1. Miotphagy ##
-# Global
 pp4 <- VlnPlot(GSE211356_sce_normoxia, assay = 'SCT', feature = 'Mitophagy', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp4 + 
@@ -1379,10 +1357,8 @@ pp4 +
 
 
 ## 2.cGAS-STING ##
-# Global
 pp5 <- VlnPlot(GSE211356_sce_normoxia, assay = 'SCT', feature = 'cGAS-STING', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp5 + 
@@ -1414,10 +1390,8 @@ pp5 +
 
 
 ## 3.TLR9 ##
-# Global
 pp6 <- VlnPlot(GSE211356_sce_normoxia, assay = 'SCT', feature = 'TLR9', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp6 + 
@@ -1449,10 +1423,8 @@ pp6 +
 
 
 ## 4.Inflammasome ##
-# Global
 pp7 <- VlnPlot(GSE211356_sce_normoxia, assay = 'SCT', feature = 'Inflammasome', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp7 + 
@@ -1487,10 +1459,8 @@ pp7 +
 GSE211356_sce_hyperoxia <- subset(GSE211356_sce1, oxygen == 'Hyperoxia')
 
 ## 1. Miotphagy ##
-# Global
 pp8 <- VlnPlot(GSE211356_sce_hyperoxia, assay = 'SCT', feature = 'Mitophagy', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp8 + 
@@ -1522,10 +1492,8 @@ pp8 +
 
 
 ## 2.cGAS-STING ##
-# Global
 pp9 <- VlnPlot(GSE211356_sce_hyperoxia, assay = 'SCT', feature = 'cGAS-STING', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp9 + 
@@ -1557,10 +1525,8 @@ pp9 +
 
 
 ## 3.TLR9 ##
-# Global
 pp10 <- VlnPlot(GSE211356_sce_hyperoxia, assay = 'SCT', feature = 'TLR9', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp10 + 
@@ -1592,10 +1558,8 @@ pp10 +
 
 
 ## 4.Inflammasome ##
-# Global
 pp11 <- VlnPlot(GSE211356_sce_hyperoxia, assay = 'SCT', feature = 'Inflammasome', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 pp11 + 
@@ -1624,7 +1588,6 @@ pp11 +
                      label.y = c(0.94),
                      method = 'wilcox.test',
                      label = "p.signif")                    
-
 
 
 
@@ -1689,10 +1652,8 @@ GSE237944_sce@meta.data <- GSE237944_sce@meta.data %>%
     experiment %in% c("Oxygen") ~ "Hyperoxia"
   ))
 
-GSE237944_sce$experiment <- factor(GSE237944_sce$experiment, levels = c('Normoxia',
-                                                                        'Hyperoxia'))
-GSE237944_sce$sex <- factor(GSE237944_sce$sex, levels = c('Female',
-                                                          'Male'))
+GSE237944_sce$experiment <- factor(GSE237944_sce$experiment, levels = c('Normoxia', 'Hyperoxia'))
+GSE237944_sce$sex <- factor(GSE237944_sce$sex, levels = c('Female', 'Male'))
 
 
 ################
@@ -1700,7 +1661,6 @@ GSE237944_sce$sex <- factor(GSE237944_sce$sex, levels = c('Female',
 ################                      
 ### Oxygen ###
 ## 1. Miotphagy ##
-# Global
 ppp <- VlnPlot(GSE237944_sce, assay = 'RNA', feature = 'Mitophagy', group.by = 'experiment', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('Mitophagy')+
@@ -1736,7 +1696,6 @@ ppp +
 
 
 ## 2. cGAS-STING ##
-# Global
 ppp1 <- VlnPlot(GSE237944_sce, assay = 'RNA', feature = 'cGAS-STING', group.by = 'experiment', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('cGAS-STING')+
@@ -1771,7 +1730,6 @@ ppp1 +
 
 
 ## 3. TLR9 ##
-# Global
 ppp2 <- VlnPlot(GSE237944_sce, assay = 'RNA', feature = 'TLR9', group.by = 'experiment', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('TLR9')+
@@ -1806,7 +1764,6 @@ ppp2 +
 
 
 ## 4. Inflammasome ##
-# Global
 ppp3 <- VlnPlot(GSE237944_sce, assay = 'RNA', feature = 'Inflammasome', group.by = 'experiment', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
   ggtitle('Inflammasome')+
@@ -1844,10 +1801,8 @@ ppp3 +
 ### Normoxia-sex ###
 GSE237944_sce_normaxia <- subset(GSE237944_sce, experiment == 'Normoxia')
 ## 1. Miotphagy ##
-# Global
 ppp4 <- VlnPlot(GSE237944_sce_normaxia, assay = 'RNA', feature = 'Mitophagy', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp4 + 
@@ -1879,10 +1834,8 @@ ppp4 +
 
 
 ## 2. cGAS-STING ##
-# Global
 ppp5 <- VlnPlot(GSE237944_sce_normaxia, assay = 'RNA', feature = 'cGAS-STING', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp5 + 
@@ -1914,10 +1867,8 @@ ppp5 +
 
 
 ## 3. TLR9 ##
-# Global
 ppp6 <- VlnPlot(GSE237944_sce_normaxia, assay = 'RNA', feature = 'TLR9', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp6 + 
@@ -1949,10 +1900,8 @@ ppp6 +
 
 
 ## 4. Inflammasome ##
-# Global
 ppp7 <- VlnPlot(GSE237944_sce_normaxia, assay = 'RNA', feature = 'Inflammasome', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp7 + 
@@ -1986,10 +1935,8 @@ ppp7 +
 ### Hyperoxia-sex ###
 GSE237944_sce_hyperoxia <- subset(GSE237944_sce, experiment == 'Hyperoxia')
 ## 1. Miotphagy ##
-# Global
 ppp8 <- VlnPlot(GSE237944_sce_hyperoxia, assay = 'RNA', feature = 'Mitophagy', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp8 + 
@@ -2022,10 +1969,8 @@ ppp8 +
 
 
 ## 2. cGAS-STING ##
-# Global
 ppp9 <- VlnPlot(GSE237944_sce_hyperoxia, assay = 'RNA', feature = 'cGAS-STING', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp9 + 
@@ -2057,10 +2002,8 @@ ppp9 +
 
 
 ## 3. TLR9 ##
-# Global
 ppp10 <- VlnPlot(GSE237944_sce_hyperoxia, assay = 'RNA', feature = 'TLR9', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp10 + 
@@ -2092,10 +2035,8 @@ ppp10 +
 
 
 ## 4. Inflammasome ##
-# Global
 ppp11 <- VlnPlot(GSE237944_sce_hyperoxia, assay = 'RNA', feature = 'Inflammasome', group.by = 'sex', pt.size = 0)+
   geom_boxplot(width = .15, col = "black", fill = "white")+NoLegend()+
-  ggtitle('Global')+
   ylab('Estimated score')
 
 ppp11 + 
