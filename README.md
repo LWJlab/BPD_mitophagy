@@ -1,5 +1,5 @@
 # BPD_mitophagy
-Raw UMI counts and associated metadata files of GSE275938, GSE211356 and GSE237944 datasets are available at the GEO database.
+Raw UMI counts of GSE275938, GSE211356 and GSE237944 datasets are available at the GEO database.
 Pre-processed h5ad file of LMEX0000004400 dataset is available at the LungMAP database (https://www.lungmap.net/dataset/?dataset_id=LMEX0000004400).
 
 Analysis associated with the scRNA-seq data used published R packages and custom functions. The entire code is encapsulated in <Pipeline.R> script.
