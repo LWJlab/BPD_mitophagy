@@ -1052,6 +1052,7 @@ GSE211356_sce <- RunQC(GSE211356_raw_sce,
                        doubletdetection = T, 
                        decontXCutoff = 0.2,
                        dir = "~/GSE221356/")
+# Note: RunQC.R is stored in https://github.com/LWJlab/scRNA-seq/blob/main/custom%20function/RunQC.R.
 
 group_names <- sapply(strsplit(rownames(GSE211356_sce@meta.data), "_"), function(x) x[1])
 
@@ -1081,7 +1082,8 @@ GSE211356_sce <- processExper(GSE211356_sce,
                               cyclescoring = T,
                               sct.method = T,
                               reduction = 'cca')
-
+# Note: processExper.R is stored in https://github.com/LWJlab/scRNA-seq/blob/main/custom%20function/processExper.R.
+                      
 GSE211356_sce <- RunPCA(GSE211356_sce) %>%
   FindNeighbors(dims = 1:50) %>%
   FindClusters(resolution = c(seq(0.1, 1, .1))) 
